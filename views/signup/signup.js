@@ -23,6 +23,9 @@ async function signup(e) {
       console.log("Check your credentials!");
     }
   } catch (error) {
+    if (error.response.status == 409) {
+      alert("Existing user!");
+    }
     console.log(error);
   }
 }

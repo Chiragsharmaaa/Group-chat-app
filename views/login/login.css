@@ -85,11 +85,11 @@ a {
 }
 
 .new-user:hover {
-  color: rgb(248, 84, 84);
+  color: #38d39f;
 }
 
 a:hover {
-  color: #38d39f;
+  color: rgb(248, 84, 84);
 }
 
 .btn {

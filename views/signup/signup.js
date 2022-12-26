@@ -19,6 +19,7 @@ async function signup(e) {
     );
     if (response.status == 201) {
       alert("Successfully signed up!");
+      window.location.href = "../login/login.html";
     } else {
       console.log("Check your credentials!");
     }

@@ -1,6 +1,11 @@
 const bcrypt = require("bcrypt");
-
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const User = require("../models/user");
+
+function generateAccessToken(id) {
+  return jwt.sign({ userId: id }, process.env.JWT_SECRET);
+}
 
 exports.postSignup = async (req, res, next) => {
   try {
@@ -18,5 +23,27 @@ exports.postSignup = async (req, res, next) => {
     });
   } catch (error) {
     res.status(500).json(error);
+  }
+};
+
+exports.postLogin = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    let user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+    bcrypt.compare(password, user.password, (err, matchedPassword) => {
+      if (!matchedPassword) {
+        return res.status(401).json({ message: "Authorization denied!" });
+      }
+      return res.status(200).json({
+        message: "Login Successful!",
+        token: generateAccessToken(user.id),
+      });
+    });
+  } catch (error) {
+    return res.status(500).json(error);
   }
 };

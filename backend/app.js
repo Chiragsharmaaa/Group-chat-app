@@ -11,7 +11,9 @@ const userRouter = require("./routes/user");
 const app = express();
 
 app.use(express.json());
-app.use(bodyParser.json({ extended: false }));
+app.use(bodyParser.json({
+  extended: false
+}));
 app.use(
   cors({
     origin: "*",
@@ -24,7 +26,7 @@ User.hasMany(Chat);
 app.use("/user", userRouter);
 
 sequelize
-  .sync({ force: true })
+  .sync()
   .then(() => {
     app.listen(process.env.PORT),
       () => {

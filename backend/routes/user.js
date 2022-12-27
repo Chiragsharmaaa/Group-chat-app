@@ -7,6 +7,7 @@ const middleware = require("../middleware/auth");
 
 router.post("/signup", userController.postSignup);
 router.post("/login", userController.postLogin);
-router.post("/message", middleware.authentication, chatController.postMessage);
+router.post("/postmessage", middleware.authentication, chatController.postMessage);
+router.get('/getmessage', middleware.authentication, chatController.getMessage)
 
 module.exports = router;

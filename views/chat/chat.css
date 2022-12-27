@@ -226,3 +226,9 @@ main footer button {
   margin-top: 5px;
   display: inline-block;
 }
+
+.logout-div {
+  position: relative;
+  bottom: 60px;
+  left: 90px;
+}

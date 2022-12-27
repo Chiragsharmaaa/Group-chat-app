@@ -21,3 +21,20 @@ exports.postMessage = async (req, res, next) => {
         });
     }
 };
+
+exports.getMessage = async (req, res, next) => {
+    try {
+        const data = await req.user.getChats();
+        let username = req.user.name;
+        res.status(200).json({
+            data,
+            username
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to retrieve chats!"
+        })
+    }
+
+
+}

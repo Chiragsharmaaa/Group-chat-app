@@ -36,7 +36,9 @@ exports.postLogin = async (req, res, next) => {
     }
     bcrypt.compare(password, user.password, (err, matchedPassword) => {
       if (!matchedPassword) {
-        return res.status(401).json({ message: "Authorization denied!" });
+        return res
+          .status(401)
+          .json({ message: "Authorization denied!", error: err });
       }
       return res.status(200).json({
         message: "Login Successful!",

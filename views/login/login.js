@@ -19,6 +19,7 @@ async function login(e) {
     );
 
     if (response.status === 200) {
+      localStorage.setItem("userToken", response.data.token);
       alert("Logged in successfully!");
       window.location.href = "../chat/chat.html";
     } else {

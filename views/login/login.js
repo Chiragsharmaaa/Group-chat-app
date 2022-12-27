@@ -20,6 +20,7 @@ async function login(e) {
 
     if (response.status === 200) {
       alert("Logged in successfully!");
+      window.location.href = "../chat/chat.html";
     } else {
       e.target.password.value = "";
     }

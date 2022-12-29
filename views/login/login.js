@@ -20,8 +20,9 @@ async function login(e) {
 
     if (response.status === 200) {
       localStorage.setItem("userToken", response.data.token);
+      localStorage.setItem('name', response.data.name)
       alert("Logged in successfully!");
-      window.location.href = "../chat/chat.html";
+      window.location.href = '../group/group.html'
     } else {
       e.target.password.value = "";
     }

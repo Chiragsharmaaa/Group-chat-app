@@ -25,9 +25,9 @@ exports.createGroup = async (req, res, next) => {
     if (!group) {
       res.status(404).json({ message: "Invalid Credentials!" });
     }
-    let data = await req.user.createGroup({ name: group });
+    let data = await req.user.createGroup({ name: group }, { through: { isAdmin: true } });
     res.status(201).json({ message: "Successfully created new group!" });
   } catch (error) {
     return res.status(500).json(error);
-  }
+  };
 };

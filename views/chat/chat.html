@@ -13,28 +13,52 @@
       integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/d97b87339f.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div class="group-container" id="container">
       <aside>
+        <h3 class="bg-info-subtle text-center" id="username"></h3>
+        <br />
         <header>
-          <input type="text" placeholder="search" />
+          <div class="search-box" id="add-user">
+            <form class="search-box" id="form-group">
+              <input
+                class="search-input groupName"
+                type="text"
+                name="email"
+                placeholder="Type user's email:"
+              />
+              <button class="search-btn fas fa-search-plus"></button>
+            </form>
+          </div>
         </header>
+        <hr class="hrtag" />
         <ul id="group"></ul>
-        <div class="logout-div">
-          <button class="btn btn-danger rounded-3" id="logout" type="button">
-            Logout
-          </button>
-        </div>
       </aside>
       <main>
         <header>
           <img src="../img/otaku.png" style="height: 50px" alt="" />
           <div>
-            <h2>
-              Chat with
-              <p id="username">VENOM</p>
-            </h2>
+            <p id="groupname">Null</p>
+          </div>
+          <div class="logout-div">
+            <button
+              class="fa fa-sign-out btn btn-danger rounded-5"
+              id="logout"
+              type="button"
+            ></button>
           </div>
         </header>
         <ul id="chat">
@@ -65,9 +89,13 @@
         </ul>
         <footer>
           <form id="chat-form">
-            <input name="message" placeholder="Type your message" />
+            <input
+              class="chatbar"
+              name="message"
+              placeholder="Type your message"
+            />
             <button
-              class="btn btn-outline-primary btn-sm"
+              class="btn bg-warning sendchat"
               type="submit"
               href="#"
               style="opacity: 0.6"

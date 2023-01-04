@@ -48,7 +48,7 @@ function showOnScreen(data) {
   };
 
   data.forEach(element => {
-    const child = `<div class="group-name" id="group-name-btn" onClick="openGroup('${element.id}','${element.name}')">${element.name}</div><hr>`
+    const child = `<di style="cursor:pointer;" class="group-name" id="group-name-btn" onClick="openGroup('${element.id}','${element.name}')">${element.name}</div><hr>`
 
     groupDiv.innerHTML += child
   });

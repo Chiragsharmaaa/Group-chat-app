@@ -6,6 +6,7 @@ const groupName = localStorage.getItem("groupName");
 const admin = JSON.parse(localStorage.getItem('isAdmin'));
 
 const chatList = document.getElementById("chat");
+const fileList = document.getElementById("filemsg");
 const form = document.getElementById("chat-form");
 const groupDiv = document.getElementById("group");
 
@@ -38,7 +39,12 @@ async function chatFxn(e) {
 let lastMsgId;
 let chatArr = [];
 
-window.addEventListener("DOMContentLoaded", screenLoader);
+window.addEventListener("DOMContentLoaded", async (e) => {
+
+  screenLoader(e);
+});
+
+
 
 //default fxn!
 async function screenLoader(e) {
@@ -47,11 +53,13 @@ async function screenLoader(e) {
   document.getElementById("username").innerHTML = `<small class="grp-user">Hey! </small> ${User}`;
   isAdmin(groupId);
   getMessage(groupId);
+  getFiles(groupId);
   getUsers(groupId);
   if (admin) {
     document.getElementById('add-user').classList.add('admin');
   };
 };
+
 
 //checker fxn for admin rights!
 async function isAdmin(groupId) {
@@ -66,7 +74,20 @@ async function isAdmin(groupId) {
   };
 };
 
-//get msgs from local storage!
+async function getFiles(groupId) {
+  console.log(groupId)
+  const files = JSON.parse(localStorage.getItem(`file${groupId}`));
+  let response = await axios.get(`http://localhost:3000/message/getfile?groupId=${groupId}`, { headers: { "Authorization": token } });
+  let data = response.data.urls;
+  console.log(data)
+  setTimeout(() => {
+    showFileOnScreen(data)
+
+  }, 500);
+};
+
+
+//get and save msgs from local storage!
 async function getMessage(groupId) {
   const messages = JSON.parse(localStorage.getItem(`msg${groupId}`));
   if (messages == undefined || messages.length == 0) {
@@ -114,9 +135,9 @@ function displayGroupAdminUser(data) {
   let child = `<div  class="group-style" id=${data.id}>
   <div class="user-btn">${data.name}</div>
   <div class="admin-buttons">
-  <a href="http://127.0.0.1:5500/views/chat/chat.html" class="add-user btn btn-sm btn-secondary rounded-5" onclick="makeAdmin('${data.id}'); window.location.reload(true); return false;" data-toggle="tooltip" title="Add Admin">&#9889</a>
-  <a class="remove-admin btn btn-sm btn-secondary rounded-5" onclick="removeAdmin('${data.id}')" data-toggle="tooltip" title="Remove Admin">&#9940</a>
-  <a class="remove-user btn btn-sm btn-secondary rounded-5" onclick="removeUser('${data.id}')" data-toggle="tooltip" title="Remove User">&#128683</a>
+  <a href="http://127.0.0.1:5500/views/chat/chat.html" class="add-user mx-2 btn btn-sm btn-secondary rounded-5" onclick="makeAdmin('${data.id}'); window.location.reload(true); return false;" data-toggle="tooltip" title="Add Admin">&#9889</a>
+  <a class="remove-admin btn btn-sm btn-secondary rounded-5 mx-2" onclick="removeAdmin('${data.id}')" data-toggle="tooltip" title="Remove Admin">&#9940</a>
+  <a class="remove-user btn btn-sm btn-secondary rounded-5 mx-2" onclick="removeUser('${data.id}')" data-toggle="tooltip" title="Remove User">&#128683</a>
   </div> 
 </div>
 <hr/>`;
@@ -197,7 +218,6 @@ async function removeAdmin(userId) {
 //function for user search box on side bar!
 document.getElementById('form-group').onsubmit = async function (e) {
   e.preventDefault();
-  console.log(e.target.email.value)
   const details = {
     email: e.target.email.value,
     groupId: groupId
@@ -213,7 +233,7 @@ document.getElementById('form-group').onsubmit = async function (e) {
       alert("User already in group!");
     } else if (error.response.status == 400) {
       alert("Enter Mail!");
-    } else if (error.response.data == 404) {
+    } else if (error.response.status == 404) {
       alert("User not found!")
     } else {
       alert('Unknown error occurred!');
@@ -296,3 +316,80 @@ document.getElementById("logout").onclick = function (e) {
   localStorage.removeItem("name");
   window.location.href = "../login/login.html";
 };
+
+//sendfile function!
+const fileform = document.getElementById('uploadForm')
+fileform.addEventListener('submit', async function (e) {
+  e.preventDefault();
+  let formData = new FormData(fileform)
+  let response = await axios.post(`http://localhost:3000/message/postfile/${groupId}`, formData, { headers: { "Authorization": token, "Content-Type": "multipart/form-data" } });
+  let data = response.data
+  console.log(data)
+  let chatData = []
+  chatData.push(data)
+  showFileOnScreen(chatData);
+  alert('File uploaded and sent successfully!')
+})
+
+async function showFileOnScreen(data) {
+  localStorage.setItem(`file${groupId}`, JSON.stringify(data));
+  data.forEach((data) => {
+    let names = data.fileName
+    let createdAt = (((names.split("/")[1]).split('.')[0]).split(' ').slice(1, 5)).join(' ')
+    if (User == data.name) {
+      let child = `<li class="me" id=${data.userId}>
+      <div class="entete">
+      <h2>You</h2>
+        <h5>${new Date(Date.parse(createdAt)).toLocaleString([], {
+        timezone: "IST",
+        hour12: true,
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+      </h5>
+      </div>
+      <div class="triangle"></div>
+      <div class="message">
+      <a href="${data.fileUrl || data.message}">Link!</a>
+      </div>
+    </li>
+    <hr>`;
+
+      fileList.innerHTML += child;
+    } else {
+      let child = `<li class="you" id=${data.userId}>
+      <div class="entete">
+      <h2 class="text-primary">${data.name}</h2>
+
+      </div>
+      <div class="triangle"></div>
+      <div class="message">
+      <a href="${data.fileUrl || data.message}">Link!</a>
+      </div>
+    </li>
+    <hr>`;
+
+      fileList.innerHTML += child;
+      console.log(fileList)
+    }
+  });
+};
+
+const modal = document.getElementById("modal");
+const openModalButton = document.getElementById("open-modal-button");
+const closeModalButton = document.getElementById("close-modal-button");
+
+// add a click event listener to the open modal button
+openModalButton.addEventListener("click", function () {
+  // add the "show" class to the modal to display it
+  modal.classList.add("show");
+});
+
+// add a click event listener to the close modal button
+closeModalButton.addEventListener("click", function () {
+  // remove the "show" class from the modal to hide it
+  modal.classList.remove("show");
+});

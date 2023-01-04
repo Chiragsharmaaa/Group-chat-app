@@ -1,5 +1,11 @@
 const Chat = require("../models/chats");
 const User = require("../models/user");
+const fs = require('fs');
+require('dotenv').config()
+
+// const S3Services = require("../services/S3services");
+const s3 = require("../services/S3services");
+const uploadData = require('../models/uploaddata');
 
 exports.postMessage = async (req, res, next) => {
   const { message } = req.body;
@@ -67,3 +73,49 @@ exports.getMessage = async (req, res, next) => {
     });
   }
 };
+exports.postFile = async (req, res) => {
+  try {
+    if (req.file != undefined) {
+      let type = (req.file.mimetype.split('/'))[1];
+      console.log('type', type)
+      let file = req.file.buffer
+      const filename = `GroupChat/${new Date()}.${type}`;
+      const fileUrl = await s3.uploadtoS3(file, filename);
+      let msg = fileUrl
+      await uploadData.create({
+        name: req.user.name,
+        fileName: filename,
+        fileUrl: fileUrl,
+        userId: req.user.id,
+        groupId: req.params.groupId
+      });
+
+      res.status(201).json({
+        name: req.user.name,
+        success: true,
+        message: msg,
+        fileName: filename,
+        userId: req.user.id,
+        groupId: req.params.groupId
+      })
+    };
+
+  } catch (error) {
+    res.status(400).json({ success: false, message: error });
+  }
+}
+
+exports.getAllFIles = async (req, res, next) => {
+  try {
+    console.log('gid', req.query.groupId)
+    let data = await uploadData.findAll({ where: { groupId: req.query.groupId } })
+    let urls = data
+    console.log('data', data)
+    if (!urls) {
+      res.status(404).json({ message: 'No URLs found!', success: false });
+    }
+    res.status(200).json({ urls, success: true });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+}

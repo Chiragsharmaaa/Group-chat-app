@@ -9,6 +9,7 @@ const Chat = require("./models/chats");
 const Group = require("./models/group");
 const UserGroup = require("./models/usergroup");
 const Forgotpassword = require("./models/forgotpassword");
+const uploadData = require("./models/uploaddata");
 
 const userRouter = require("./routes/user");
 const messageRouter = require("./routes/message");
@@ -35,6 +36,9 @@ Chat.belongsTo(Group);
 
 Forgotpassword.belongsTo(User);
 User.hasMany(Forgotpassword);
+
+User.hasMany(uploadData);
+uploadData.belongsTo(User);
 
 User.belongsToMany(Group, {
   through: UserGroup
